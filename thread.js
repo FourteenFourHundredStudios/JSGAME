@@ -1,0 +1,21 @@
+onmessage = function(e) {
+	//e.data
+ 	//console.log('Message received from main script');
+  	//var workerResult = 'Result: ' + (e.data[0] * e.data[1]);
+  	//console.log('Posting message back to main script');
+  	
+  	setInterval(function(){
+  		postMessage("friction");
+  	},100);
+
+ 
+ /*
+  	setInterval(function(){
+  		postMessage("animate");
+  	},1000);
+*/
+}
+
+function loop(){
+	
+}
