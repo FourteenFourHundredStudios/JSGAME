@@ -34,7 +34,7 @@ class Tile{
 			this.obj=map[i];
 
 			if(this.obj.x<width-xCam && this.obj.x>-30-xCam&& this.obj.y<height-yCam && this.obj.y>-30-yCam){
-				this.obj.paintRect();
+				this.obj.paintTile();
 				drawing++;
 
 
@@ -58,7 +58,7 @@ class Tile{
 
 	}
 
-	paintRect(){
+	paintTile(){
 		this.img=imageMap[this.image];
 		if(this.img instanceof Array){
 			this.img=imageMap[this.image][this.currentFrame];

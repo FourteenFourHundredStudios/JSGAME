@@ -1,6 +1,13 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var net = require('net');
+var util = require('util');
+javaClients=[]
+htmlClients=[]
+
+jSock="";
+hSock="";
 
 function random(min,max){
   return Math.floor((Math.random() * max) + min);
@@ -44,10 +51,11 @@ for(var i=0;i<100;i++){
   }
 
 io.on('connection', function(socket){
-  console.log('a user connected');
-
+  console.log('HTML5 user connected!');
+  htmlClients.push(socket);
+  hSock=socket;
   socket.on('join', function (data) {
-    console.log("sending map...");
+    //console.log("sending map...");
     socket.join(data.username); // We are using room of socket io
     map.forEach(function(obj){
       //io.sockets.in[socket.id].emit("blockData",obj);
@@ -60,7 +68,7 @@ io.on('connection', function(socket){
   
 
    socket.on('disconnect', function(){
-    console.log('user disconnected');
+     console.log('HTML5 user disconnected :(');
 
 
   });
@@ -79,16 +87,19 @@ for(var i=0;i<emitFuncs;i++){
 socket.on('playerData', function(msg){
   //console.log("message: "+msg);
     io.emit('playerData',msg);
+    //jemit('playerData',msg);
 });
 
 socket.on('removeEntity', function(msg){
   //console.log("message: "+msg);
     io.emit('removeEntity',msg);
+    jemit('removeEntity',msg);
 });
 
 socket.on('entity', function(msg){
   //console.log("message: "+msg);
     io.emit('entity',msg);
+    jemit('entity',msg);
 });
 
 socket.on('projectileEntityData', function(msg){
@@ -104,10 +115,12 @@ socket.on('itemEntityData', function(msg){
 socket.on('hit', function(msg){
   //console.log("message: "+msg);
     io.emit('hit',msg);
+    jemit('hit',msg);
 });
 
 socket.on('chat', function(msg){
   io.emit('chat',msg);
+  jemit('chat',msg);
 });
 
 socket.on('setTile', function(msg){
@@ -121,9 +134,47 @@ socket.on('setTile', function(msg){
         }
     }
     io.emit('setTile',msg);
+    jemit('setTile',msg)
 });
 
 });
+
+  
+  function jemit(label,data){
+   // console.log();
+    //data=util.inspect(data).replace("\n","");
+    data=JSON.stringify(data)
+
+    //data=util.inspect(data).replace("\\n","");
+    for(var i=0;i<javaClients.length;i++){
+        javaClients[i].write(label+"=>"+data+"\n");
+    }
+  }
+
+  net.createServer(function(sock) { 
+    console.log("Java user connected!");
+    javaClients.push(sock);
+    jSock=sock;
+    map.forEach(function(obj){
+        sock.write("blockData=>"+ util.inspect(obj)+"\n")
+    });
+    sock.on('data', function(data) { 
+
+    });
+    sock.on('close', function(data) { 
+        for(var i=0;i<javaClients.length;i++){
+          if(javaClients[i]==sock){
+            console.log("Java user disconnected :(");
+            javaClients.splice(i,1);
+          }
+        }
+    });
+  }).listen(3002, '10.0.0.19');
+
+
+  console.log("JSGAME (Java) server listening on :3002");
+
+
  
 
 app.route('/*')
@@ -158,6 +209,7 @@ app.route('/images/*')
 //http.listen(9000, '10.0.0.11',function(){
   
   http.listen(3001, '10.0.0.19',function(){
-    console.log('AnyChat server listening on :3001');
+    console.log('JSGAME (HTML5) server listening on :3001');
+  });
 
-});
+
