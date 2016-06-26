@@ -1,3 +1,5 @@
+//cd "/Users/Marc/Documents/Code/JSGAME";node server.js;
+
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -87,7 +89,7 @@ for(var i=0;i<emitFuncs;i++){
 socket.on('playerData', function(msg){
   //console.log("message: "+msg);
     io.emit('playerData',msg);
-    //jemit('playerData',msg);
+    jemit('playerData',msg);
 });
 
 socket.on('removeEntity', function(msg){
