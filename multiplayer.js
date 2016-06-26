@@ -56,7 +56,7 @@ socket.on('playerData', function(msg){
 	//console.log("message: "+msg);
     //io.emit('playerData',msg);
   
-    //console.log(msg);
+    console.log(msg);
     count=0;
     c=false
     if(!(msg.username==player.username)){

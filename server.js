@@ -11,6 +11,8 @@ htmlClients=[]
 jSock="";
 hSock="";
 
+jSockString="";
+
 function random(min,max){
   return Math.floor((Math.random() * max) + min);
 }
@@ -74,16 +76,6 @@ io.on('connection', function(socket){
 
 
   });
-
-/*
-emitFuncs=['playerData','projectileEntityData','itemEntityData','setTile'];
-
-for(var i=0;i<emitFuncs;i++){
-  socket.on(emitFuncs[i], function(msg){
-    io.emit(emitFuncs[i],msg);
-  });
-}
-*/
 
 
 socket.on('playerData', function(msg){
@@ -155,13 +147,22 @@ socket.on('setTile', function(msg){
 
   net.createServer(function(sock) { 
     console.log("Java user connected!");
+
+    
     javaClients.push(sock);
     jSock=sock;
     map.forEach(function(obj){
         sock.write("blockData=>"+ util.inspect(obj)+"\n")
     });
-    sock.on('data', function(data) { 
-
+    sock.on('data', function(data) {         
+       try{
+          info=data.toString('utf8');
+          s=JSON.parse(info.split("=>")[1]);
+          io.emit(info.split("=>")[0],s);
+         }catch(e){
+          console.log("java parsing error");
+          return;
+        }
     });
     sock.on('close', function(data) { 
         for(var i=0;i<javaClients.length;i++){
