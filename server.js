@@ -118,7 +118,7 @@ socket.on('chat', function(msg){
 });
 
 socket.on('setTile', function(msg){
-      //console.log(msg.img);
+      //console.log("tile set");
 
       for(var i=0;i<map.length;i++){
         var obj=map[i];
@@ -159,6 +159,7 @@ socket.on('setTile', function(msg){
           info=data.toString('utf8');
           s=JSON.parse(info.split("=>")[1]);
           io.emit(info.split("=>")[0],s);
+          jemit(info.split("=>")[0],s);
          }catch(e){
           console.log("java parsing error");
           return;
